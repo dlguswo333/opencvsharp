@@ -95,14 +95,14 @@ jobs:
           vcpkgGitURL: https://github.com/dlguswo333/vcpkg.git
 
       - name: Build x64
-        shell: cmd
+        shell: powershell
         run: |
           & ${env:VCPKG_ROOT}\vcpkg install libavif:x64-windows-static
           & ${env:VCPKG_ROOT}\vcpkg integrate install
           msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x64 -maxcpucount
 
       - name: Build x86
-        shell: cmd
+        shell: powershell
         run: |
           & ${env:VCPKG_ROOT}\vcpkg install libavif:x86-windows-static
           & ${env:VCPKG_ROOT}\vcpkg integrate install
