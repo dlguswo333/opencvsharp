@@ -92,7 +92,7 @@ public static class Packer
     private static IReadOnlyList<string> UwpNativeDlls(string version)
     {
         version = version.Replace(".", "");
-        return new[] 
+        return new[]
         {
             $"opencv_world{version}.dll",
             $"opencv_img_hash{version}.dll"
