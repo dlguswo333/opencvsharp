@@ -23,6 +23,21 @@ jobs:
           fetch-depth: 1
           submodules: true
 
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11.5
+        with:
+          vcpkgGitCommitId: "0d5cae153065957df7f382de7c1549ccc88027e5"
+          vcpkgGitURL: https://github.com/dlguswo333/vcpkg.git
+
+      - name: Vcpkg
+        shell: powershell
+        run: |
+          & ${env:VCPKG_ROOT}\vcpkg install tesseract:x64-windows-static
+          & ${env:VCPKG_ROOT}\vcpkg install libavif:x64-windows-static
+          & ${env:VCPKG_ROOT}\vcpkg install tesseract:x86-windows-static
+          & ${env:VCPKG_ROOT}\vcpkg install libavif:x86-windows-static
+          & ${env:VCPKG_ROOT}\vcpkg integrate install
+
 #      - name: Cache restored NuGet packages
 #        uses: actions/cache@v2
 #        with:
@@ -88,24 +103,14 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      - name: Setup vcpkg
-        uses: lukka/run-vcpkg@v11.5
-        with:
-          vcpkgGitCommitId: "0d5cae153065957df7f382de7c1549ccc88027e5"
-          vcpkgGitURL: https://github.com/dlguswo333/vcpkg.git
-
       - name: Build x64
         shell: powershell
         run: |
-          & ${env:VCPKG_ROOT}\vcpkg install libavif:x64-windows-static
-          & ${env:VCPKG_ROOT}\vcpkg integrate install
           msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x64 -maxcpucount
 
       - name: Build x86
         shell: powershell
         run: |
-          & ${env:VCPKG_ROOT}\vcpkg install libavif:x86-windows-static
-          & ${env:VCPKG_ROOT}\vcpkg integrate install
           msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x86 -maxcpucount
 
       #- name: Build ARM
