@@ -90,11 +90,15 @@ jobs:
 
       - name: Build x64
         shell: cmd
-        run: msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x64 -maxcpucount
+        run: |
+          vcpkg install libavif:x64-windows-static
+          msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x64 -maxcpucount
 
       - name: Build x86
         shell: cmd
-        run: msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x86 -maxcpucount
+        run: |
+          vcpkg install libavif:x86-windows-static
+          msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x86 -maxcpucount
 
       #- name: Build ARM
       #  shell: cmd
