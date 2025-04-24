@@ -88,16 +88,24 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11.5
+        with:
+          vcpkgGitCommitId: "0d5cae153065957df7f382de7c1549ccc88027e5"
+          vcpkgGitURL: https://github.com/dlguswo333/vcpkg.git
+
       - name: Build x64
         shell: cmd
         run: |
-          vcpkg install libavif:x64-windows-static
+          & ${env:VCPKG_ROOT}\vcpkg install libavif:x64-windows-static
+          & ${env:VCPKG_ROOT}\vcpkg integrate install
           msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x64 -maxcpucount
 
       - name: Build x86
         shell: cmd
         run: |
-          vcpkg install libavif:x86-windows-static
+          & ${env:VCPKG_ROOT}\vcpkg install libavif:x86-windows-static
+          & ${env:VCPKG_ROOT}\vcpkg integrate install
           msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x86 -maxcpucount
 
       #- name: Build ARM
