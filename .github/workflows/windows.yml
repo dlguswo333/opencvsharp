@@ -34,6 +34,7 @@ jobs:
         run: |
           & ${env:VCPKG_ROOT}\vcpkg install libavif:x64-windows-static
           & ${env:VCPKG_ROOT}\vcpkg install libavif:x86-windows-static
+          & ${env:VCPKG_ROOT}\vcpkg integrate install
 
 #      - name: Cache restored NuGet packages
 #        uses: actions/cache@v2
