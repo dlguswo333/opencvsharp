@@ -10,18 +10,32 @@ on:
 env:
   OPENCV_VERSION: "4.10.0"
   TESSERACT_RELEASE_VERSION: "2024.08.19"
+  OPENCV_FILES_TAG: "4.10.0.20240612"
 
 jobs:
   build:
 
     runs-on: windows-2022
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
           submodules: true
+
+      # - name: Setup vcpkg
+      #   uses: lukka/run-vcpkg@v11.5
+      #   with:
+      #     vcpkgGitCommitId: "0d5cae153065957df7f382de7c1549ccc88027e5"
+      #     vcpkgGitURL: https://github.com/dlguswo333/vcpkg.git
+
+      # - name: Vcpkg
+      #   shell: powershell
+      #   run: |
+      #     & ${env:VCPKG_ROOT}\vcpkg install libavif:x64-windows-static
+      #     & ${env:VCPKG_ROOT}\vcpkg install libavif:x86-windows-static
+      #     & ${env:VCPKG_ROOT}\vcpkg integrate install
 
 #      - name: Cache restored NuGet packages
 #        uses: actions/cache@v2
@@ -36,7 +50,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/opencv_files
-          key: opencv-${{ env.OPENCV_VERSION }}-rev2
+          key: opencv-${{ env.OPENCV_VERSION }}-${{ env.OPENCV_FILES_TAG }}-rev2
 
       - name: Download OpenCV binaries
         if: steps.cache_opencv.outputs.cache-hit != 'true'
@@ -44,10 +58,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $OPENCV_FILES_TAG = "4.10.0.20240612"
           $OPENCV_VERSION = "4100"
-          gh release download --repo shimat/opencv_files $OPENCV_FILES_TAG --pattern "opencv${OPENCV_VERSION}_win_x64.zip" 
-          gh release download --repo shimat/opencv_files $OPENCV_FILES_TAG --pattern "opencv${OPENCV_VERSION}_win_x86.zip"       
+          gh release download --repo dlguswo333/opencv_files $OPENCV_FILES_TAG --pattern "opencv${OPENCV_VERSION}_win_x64.zip"
+          gh release download --repo dlguswo333/opencv_files $OPENCV_FILES_TAG --pattern "opencv${OPENCV_VERSION}_win_x86.zip"
           Expand-Archive -Path opencv${OPENCV_VERSION}_win_x64.zip -DestinationPath opencv_files/opencv4100_win_x64 -Force -ErrorAction Stop
           Expand-Archive -Path opencv${OPENCV_VERSION}_win_x86.zip -DestinationPath opencv_files/opencv4100_win_x86 -Force -ErrorAction Stop
           ls opencv_files
@@ -68,7 +81,7 @@ jobs:
         run: |
           gh release download --repo shimat/tesseract_vcpkg ${TESSERACT_RELEASE_VERSION} --pattern "*.zip" --output tesseract.zip
           Expand-Archive -Path tesseract.zip -DestinationPath tesseract_files -Force -ErrorAction Stop
-          ls tesseract_files          
+          ls tesseract_files
           Move-Item tesseract_files/tesseract_vcpkg.0.0.9-beta tesseract_files/tesseract_vcpkg
           ls tesseract_files/tesseract_vcpkg
           New-Item tesseract_files/tesseract_vcpkg -ItemType Directory -Force
@@ -89,12 +102,14 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Build x64
-        shell: cmd
-        run: msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x64 -maxcpucount
+        shell: powershell
+        run: |
+          msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x64 -maxcpucount
 
       - name: Build x86
-        shell: cmd
-        run: msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x86 -maxcpucount
+        shell: powershell
+        run: |
+          msbuild OpenCvSharp.sln /t:build /p:configuration=Release /p:platform=x86 -maxcpucount
 
       #- name: Build ARM
       #  shell: cmd
@@ -116,9 +131,9 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = "Stop"
-          
+
           $date = Get-Date -Format "yyyyMMdd"
-          $version = "${env:OPENCV_VERSION}.${date}-beta"
+          $version = "${env:OPENCV_VERSION}.${date}"
           Write-Host "version = ${version}"
 
           (Get-ChildItem $env:GITHUB_WORKSPACE -Recurse).Where{ $_.Extension -eq ".nuspec" }.ForEach{
