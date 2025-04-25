@@ -10,6 +10,7 @@ on:
 env:
   OPENCV_VERSION: "4.10.0"
   TESSERACT_RELEASE_VERSION: "2024.08.19"
+  OPENCV_FILES_TAG: "4.10.0.20240612"
 
 jobs:
   build:
@@ -49,7 +50,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/opencv_files
-          key: opencv-${{ env.OPENCV_VERSION }}-rev2
+          key: opencv-${{ env.OPENCV_VERSION }}-${{ env.OPENCV_FILES_TAG }}-rev2
 
       - name: Download OpenCV binaries
         if: steps.cache_opencv.outputs.cache-hit != 'true'
@@ -57,7 +58,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $OPENCV_FILES_TAG = "4.10.0.20240612"
           $OPENCV_VERSION = "4100"
           gh release download --repo dlguswo333/opencv_files $OPENCV_FILES_TAG --pattern "opencv${OPENCV_VERSION}_win_x64.zip"
           gh release download --repo dlguswo333/opencv_files $OPENCV_FILES_TAG --pattern "opencv${OPENCV_VERSION}_win_x86.zip"
