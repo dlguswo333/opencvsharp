@@ -23,18 +23,18 @@ jobs:
           fetch-depth: 1
           submodules: true
 
-      - name: Setup vcpkg
-        uses: lukka/run-vcpkg@v11.5
-        with:
-          vcpkgGitCommitId: "0d5cae153065957df7f382de7c1549ccc88027e5"
-          vcpkgGitURL: https://github.com/dlguswo333/vcpkg.git
+      # - name: Setup vcpkg
+      #   uses: lukka/run-vcpkg@v11.5
+      #   with:
+      #     vcpkgGitCommitId: "0d5cae153065957df7f382de7c1549ccc88027e5"
+      #     vcpkgGitURL: https://github.com/dlguswo333/vcpkg.git
 
-      - name: Vcpkg
-        shell: powershell
-        run: |
-          & ${env:VCPKG_ROOT}\vcpkg install libavif:x64-windows-static
-          & ${env:VCPKG_ROOT}\vcpkg install libavif:x86-windows-static
-          & ${env:VCPKG_ROOT}\vcpkg integrate install
+      # - name: Vcpkg
+      #   shell: powershell
+      #   run: |
+      #     & ${env:VCPKG_ROOT}\vcpkg install libavif:x64-windows-static
+      #     & ${env:VCPKG_ROOT}\vcpkg install libavif:x86-windows-static
+      #     & ${env:VCPKG_ROOT}\vcpkg integrate install
 
 #      - name: Cache restored NuGet packages
 #        uses: actions/cache@v2
@@ -57,10 +57,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $OPENCV_FILES_TAG = "4.10.0.20250424"
+          $OPENCV_FILES_TAG = "4.10.0.20240612"
           $OPENCV_VERSION = "4100"
-          gh release download --repo dlguswo333/opencv_files $OPENCV_FILES_TAG --pattern "opencv${OPENCV_VERSION}_win_x64.zip"
-          gh release download --repo dlguswo333/opencv_files $OPENCV_FILES_TAG --pattern "opencv${OPENCV_VERSION}_win_x86.zip"
+          gh release download --repo shimat/opencv_files $OPENCV_FILES_TAG --pattern "opencv${OPENCV_VERSION}_win_x64.zip"
+          gh release download --repo shimat/opencv_files $OPENCV_FILES_TAG --pattern "opencv${OPENCV_VERSION}_win_x86.zip"
           Expand-Archive -Path opencv${OPENCV_VERSION}_win_x64.zip -DestinationPath opencv_files/opencv4100_win_x64 -Force -ErrorAction Stop
           Expand-Archive -Path opencv${OPENCV_VERSION}_win_x86.zip -DestinationPath opencv_files/opencv4100_win_x86 -Force -ErrorAction Stop
           ls opencv_files
